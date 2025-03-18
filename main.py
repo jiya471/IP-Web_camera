@@ -5,30 +5,30 @@ import os
 import time
 from utils.video_search import search_youtube_video
 
-# Tesseract setup (adjust the path if necessary)
+
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-# YouTube API Key
-API_KEY = "8fd3d69fdmsh91400bc8e41583ap1fcasjsnaaf910035543"  # Replace with your actual key
 
-# Create folder for captured frames
+API_KEY = "8fd3d69fbdmsh91400bc8e41583ap1fbfcajsnaaf910b35543"  
+
+
 IMAGE_SAVE_PATH = "captured_frames"
 os.makedirs(IMAGE_SAVE_PATH, exist_ok=True)
 
+
+
 def extract_text_from_frame(frame):
-    """Extracts text from a given image frame using Tesseract OCR."""
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) 
     text = pytesseract.image_to_string(gray).strip()
     return text
 
 def save_frame(frame, count):
-    """Saves a captured frame as an image."""
     image_path = os.path.join(IMAGE_SAVE_PATH, f"frame_{count}.jpg")
     cv2.imwrite(image_path, frame)
 
 def start_camera():
-    """Captures video from the webcam, detects text, and searches YouTube."""
-     # Open default webcam
+    
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
        print("Error: Unable to access camera.")
@@ -49,20 +49,20 @@ def start_camera():
             break
 
         cv2.imshow("Camera", frame)
-        save_frame(frame, frame_count)  # Save each frame
+        save_frame(frame, frame_count) 
 
         text = extract_text_from_frame(frame)
         print(f"Detected Text: {text}")
 
-        if text:  # If any text is detected
+        if text: 
             detected_text = text
             print(f"Text detected: {detected_text}")
             break
 
         frame_count += 1
-        time.sleep(1)  # Reduce processing load
+        time.sleep(1) 
 
-        # Press 'q' to quit manually
+       
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -95,5 +95,5 @@ def generate_video(frame_count):
     video.release()
     print(f"Video saved as {video_name}")
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     start_camera()

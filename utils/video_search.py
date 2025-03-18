@@ -9,7 +9,7 @@ def search_youtube_video(query, api_key):
     """Searches YouTube for a video related to the query and plays it."""
     search_url = "https://youtube138.p.rapidapi.com/search/"
     headers = {
-        "X-RapidAPI-Key": "8fd3d69fdmsh91400bc8e41583ap1fcasjsnaaf910035543",
+        "X-RapidAPI-Key": "8fd3d69fbdmsh91400bc8e41583ap1fbfcajsnaaf910b35543",
         "X-RapidAPI-Host": "youtube138.p.rapidapi.com"
     }
     params = {"q": query, "hl": "en", "gl": "US"}
