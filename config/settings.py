@@ -1,8 +1,10 @@
 # Configuration for IP Camera
 
-# Replace these values with your camera details
-CAMERA_URL = "http://192.168.1.100:8080/video"  # Example MJPEG URL
-RTSP_URL = "rtsp://admin:password@192.168.1.100:554/stream"  # Example RTSP URL
+CAMERA_URL = 0
 
-# Toggle between MJPEG and RTSP streaming
-USE_RTSP = False  # Set to True to use RTSP instead of MJPEG
+# Path to save captured images
+IMAGE_SAVE_PATH = "captured_images/"
+
+# Google API Key (Needed for YouTube search)
+# Get yours from https://console.cloud.google.com/
+YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
