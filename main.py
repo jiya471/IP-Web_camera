@@ -1,46 +1,99 @@
+
 import cv2
-from config.settings import CAMERA_URL
-from utils.ocr import extract_text_from_frame, save_image
+import pytesseract
+import os
+import time
 from utils.video_search import search_youtube_video
 
-def main():
-    print("Starting IP Camera Stream...")
-    cap = cap = cv2.VideoCapture(0) 
+# Tesseract setup (adjust the path if necessary)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+# YouTube API Key
+API_KEY = "8fd3d69fdmsh91400bc8e41583ap1fcasjsnaaf910035543"  # Replace with your actual key
+
+# Create folder for captured frames
+IMAGE_SAVE_PATH = "captured_frames"
+os.makedirs(IMAGE_SAVE_PATH, exist_ok=True)
+
+def extract_text_from_frame(frame):
+    """Extracts text from a given image frame using Tesseract OCR."""
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    text = pytesseract.image_to_string(gray).strip()
+    return text
+
+def save_frame(frame, count):
+    """Saves a captured frame as an image."""
+    image_path = os.path.join(IMAGE_SAVE_PATH, f"frame_{count}.jpg")
+    cv2.imwrite(image_path, frame)
+
+def start_camera():
+    """Captures video from the webcam, detects text, and searches YouTube."""
+     # Open default webcam
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print("Error: Unable to access the camera stream.")
-        return
+       print("Error: Unable to access camera.")
+       return
+    else:
+       print("Camera successfully opened!")
+  #  cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+  #  cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-    detected_texts = set()  # To avoid repeated detections
+    
+    frame_count = 0
+    detected_text = None
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Failed to grab frame.")
+            print("Error: Could not read frame.")
             break
-        
-        # Extract text from the frame
+
+        cv2.imshow("Camera", frame)
+        save_frame(frame, frame_count)  # Save each frame
+
         text = extract_text_from_frame(frame)
+        print(f"Detected Text: {text}")
 
-        if text and text not in detected_texts:
-            print(f"Detected Text: {text}")
-            detected_texts.add(text)
-            
-            # Save the image
-            save_image(frame, text)
-            
-            # Search YouTube and play video
-            search_youtube_video(text)
+        if text:  # If any text is detected
+            detected_text = text
+            print(f"Text detected: {detected_text}")
+            break
 
-        # Show the live feed
-        cv2.imshow("Camera Feed", frame)
+        frame_count += 1
+        time.sleep(1)  # Reduce processing load
 
-        # Press 'q' to quit
+        # Press 'q' to quit manually
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    main()
+    if detected_text:
+        search_youtube_video(detected_text, API_KEY)
+
+    generate_video(frame_count)
+
+def generate_video(frame_count):
+    """Creates a video from saved frames."""
+    video_name = "captured_video.avi"
+    
+    first_frame_path = os.path.join(IMAGE_SAVE_PATH, "frame_0.jpg")
+    if not os.path.exists(first_frame_path):
+        print("Error: No frames captured. Video cannot be created.")
+        return
+
+    frame = cv2.imread(first_frame_path)
+    height, width, layers = frame.shape
+    video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'XVID'), 10, (width, height))
+
+    for i in range(frame_count):
+        frame_path = os.path.join(IMAGE_SAVE_PATH, f"frame_{i}.jpg")
+        if os.path.exists(frame_path):
+            video.write(cv2.imread(frame_path))
+
+    video.release()
+    print(f"Video saved as {video_name}")
+
+if __name__ == "_main_":
+    start_camera()
