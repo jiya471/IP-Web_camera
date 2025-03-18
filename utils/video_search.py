@@ -1,12 +1,12 @@
 
 
-
+"""
 
 import requests
 import webbrowser
 
 def search_youtube_video(query, api_key):
-    """Searches YouTube for a video related to the query and plays it."""
+   
     search_url = "https://youtube138.p.rapidapi.com/search/"
     headers = {
         "X-RapidAPI-Key": "8fd3d69fbdmsh91400bc8e41583ap1fbfcajsnaaf910b35543",
@@ -31,3 +31,14 @@ def search_youtube_video(query, api_key):
             print("No video found for this query.")
     else:
         print("YouTube API request failed. Please check your API key and request limits.")
+
+
+"""
+
+import webbrowser
+
+def search_youtube_video(query):
+  
+    search_url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
+    print(f"Opening YouTube search: {search_url}")
+    webbrowser.open(search_url)
